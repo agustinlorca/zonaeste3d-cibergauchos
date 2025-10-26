@@ -1,0 +1,11 @@
+.title {
+  font-size: 25px !important;
+  font-weight: 300 !important;
+  margin-bottom: 1rem;
+}
+
+.price {
+  font-size: 25px !important;
+  font-weight: 400 !important;
+  margin-bottom: 1.5rem;
+}

@@ -1,0 +1,85 @@
+.navbar {
+    background-color: #fbfbdf !important;
+}
+.img-navbar {
+    max-width: 100%;
+    margin-right: .5rem;
+}
+.title-brand {
+    font-size: 25px !important;
+    color: #2c5871 !important;
+    margin-left: 1rem;
+    margin-right: 1rem;
+    display: flex;
+    align-items: center;
+}
+  
+.nav-link {
+    margin-right: 0.5rem !important;
+    font-size: 19px !important;
+}
+.nav-link {
+    transition: color .2s ease !important;
+}
+.nav-link:hover {
+    color: #0a2e40 !important;
+}
+.nav-cart{
+    max-width: 100%;
+    height: auto;
+    margin-left: 10rem;
+}
+
+.dropdown-toggle::after {
+    display: none !important;
+}
+
+.login-button {
+    border-radius: .5rem;
+    text-transform: uppercase;
+    font-style: normal;
+    font-weight: 400;
+    padding-left: 10px;
+    padding-right: 10px;
+    color: #fff;
+    height: 40px;
+    font-size: 0.7rem;
+    line-height: 14px;
+    letter-spacing: 1.2px;
+    transition: .2s .1s;
+    background-image: linear-gradient(90deg,#21283f,#1057da);
+    border: 0 solid;
+    overflow: hidden;
+}
+  
+.login-button:hover {
+    cursor: pointer;
+    transition: all .3s ease-in;
+    padding-right: 20px;
+    padding-left: 20px;
+}
+
+.register-button {
+    border-radius: .5rem;
+    text-transform: uppercase;
+    font-style: normal;
+    font-weight: 400;
+    padding-left: 10px;
+    padding-right: 10px;
+    color: #fff;
+    height: 40px;
+    font-size: 0.7rem;
+    line-height: 14px;
+    letter-spacing: 1.2px;
+    transition: .2s .1s;
+    background-image: linear-gradient(90deg,#1d4613,hsl(113, 75%, 41%));
+    border: 0 solid;
+    overflow: hidden;
+}
+  
+.register-button:hover {
+    cursor: pointer;
+    transition: all .3s ease-in;
+    padding-right: 20px;
+    padding-left: 20px;
+}

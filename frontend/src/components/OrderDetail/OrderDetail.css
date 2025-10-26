@@ -1,0 +1,55 @@
+.card-info {
+    height: auto !important;
+    margin-bottom: 2rem;
+  }
+  
+  .first-header{
+    display: flex !important;
+    padding: 0rem !important;
+  }
+  
+  .first-header p {
+    flex: 1 !important;
+    text-align: center;
+  }
+  .first-header p:first-child {
+    padding: .5rem !important;
+    color: #ffffff;
+    background-color: #546873;
+  }
+  
+  .first-header p:last-child {
+    padding: .5rem !important;
+    background-color: #2c5871;
+    color: #ffffff;
+    font-weight: bold;
+  }
+  
+  .second-header{
+    padding: .5rem !important;
+    text-align: center;
+    color: #ffffff !important;
+    background-color: #546873 !important;
+  }
+  
+  
+  .primary-text {
+    color: #2c5871; 
+    font-weight: lighter;
+  }
+  
+  
+  .head-table th{
+    background-color: #546873 !important;
+    text-align: center;
+    color: #ffffff !important;
+  }
+  
+  .spacer-row {
+    border: none;
+  }
+  .td-total{
+    background-color: #546873 !important;
+    text-align: center;
+    color: #ffffff !important;
+  }

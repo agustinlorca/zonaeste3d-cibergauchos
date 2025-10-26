@@ -1,0 +1,162 @@
+.form-box {
+  text-align: center;
+  width: 300px;
+  overflow: hidden;
+  border-radius: 16px;
+  color: #010101;
+}
+.form-box-bg-login {
+  background: #f1f7fe;
+}
+.form-box-bg-register {
+  background: #e9f7ef;
+}
+
+.form {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 32px 24px 24px;
+  gap: 16px;
+  text-align: center;
+}
+
+.title {
+  font-weight: bold;
+  font-size: 1.6rem;
+}
+
+.form-container {
+  overflow: hidden;
+  border-radius: 8px;
+  background-color: #fff;
+  margin: 1rem 0 0.5rem;
+  width: 100%;
+}
+
+.input {
+  background: none;
+  border: 0;
+  outline: 0;
+  height: 40px;
+  width: 100%;
+  border-bottom: 1px solid #eee;
+  font-size: 0.9rem;
+  padding: 8px 15px;
+}
+.password-input-container {
+  position: relative;
+}
+
+.password-toggle-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+.form-section {
+  padding: 16px;
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.form-section-bg-login {
+  background-color: #e0ecfb;
+}
+
+.form-section-bg-register {
+  background-color: #d4efdf;
+}
+
+.form-section a {
+  font-weight: bold;
+  color: #0066ff;
+  transition: color 0.3s ease;
+  text-decoration: none;
+}
+
+.form-section a:hover {
+  color: #005ce6;
+  text-decoration: underline;
+}
+
+/*----------------------------- Login ----------------------------*/
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 9rem;
+  margin-bottom: 3rem;
+  
+}
+
+.forgot-password {
+  color: #003db7;
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+.forgot-password:hover {
+  text-decoration: underline;
+}
+.error {
+  color: red;
+  font-size: 1rem;
+}
+.login-btn {
+  background-color: #00388d;
+  color: #fff;
+  border: 0;
+  border-radius: 24px;
+  padding: 10px 16px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.login-btn:hover {
+  background-color: #1450aa;
+}
+
+.google-login-button {
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+  background-color: #ffffff;
+  color: #898989;
+  border: 0;
+  border-radius: 24px;
+  padding: 10px 16px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.google-login-button:hover {
+  background-color: #f7f7f7;
+}
+
+/*----------------------------- Register ----------------------------*/
+.register-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 9rem;
+  margin-bottom: 4rem;
+}
+
+.register-btn {
+  background-color: #1e8449;
+  color: #fff;
+  border: 0;
+  border-radius: 24px;
+  padding: 10px 16px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.register-btn:hover {
+  background-color: #229954;
+}
