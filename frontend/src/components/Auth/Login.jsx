@@ -14,6 +14,8 @@ const Login = () => {
   const [user, setUser] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [loadingType, setLoadingType] = useState(null);
+  const isSubmitting = loadingType !== null;
 
   const handleChange = ({ target: { name, value } }) => {
     setError("");
@@ -30,6 +32,7 @@ const Login = () => {
     }
 
     try {
+      setLoadingType("credentials");
       await login(email, password);
       toast.success("Inicio de sesion exitoso", {
         position: "top-center",
@@ -49,11 +52,15 @@ const Login = () => {
       } else {
         setError("No pudimos iniciar sesión. Intentalo más tarde.");
       }
+    } finally {
+      setLoadingType(null);
     }
   };
 
   const handleGoogleLogin = async () => {
+    setError("");
     try {
+      setLoadingType("google");
       await loginWithGoogle();
       navigate("/");
     } catch (err) {
@@ -62,6 +69,8 @@ const Login = () => {
           "Error al iniciar sesion con Google. Selecciona una cuenta antes de cerrar la ventana."
         );
       }
+    } finally {
+      setLoadingType(null);
     }
   };
 
@@ -142,15 +151,21 @@ const Login = () => {
               </div>
             </div>
 
-            <div className="auth-secondary-action">
+            <div className="auth-secondary-action auth-secondary-action--center">
               <button type="button" className="auth-ghost-button" onClick={handleResetPassword}>
                 Olvidé mi contraseña
               </button>
             </div>
 
             <div className="auth-actions">
-              <button type="submit" className="auth-primary-button">
-                Ingresar
+              <button type="submit" className="auth-primary-button" disabled={isSubmitting}>
+                {loadingType === "credentials" ? (
+                  <>
+                    <span className="auth-spinner auth-spinner--light" />Ingresando...
+                  </>
+                ) : (
+                  "Ingresar"
+                )}
               </button>
               <button
                 type="button"

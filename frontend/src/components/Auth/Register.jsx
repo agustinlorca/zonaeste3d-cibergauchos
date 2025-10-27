@@ -21,6 +21,7 @@ const Register = () => {
   });
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = ({ target: { name, value } }) => {
     setError("");
@@ -73,6 +74,7 @@ const Register = () => {
     }
 
     try {
+      setIsSubmitting(true);
       await register(email, password, {
         firstName: firstName.trim(),
         lastName: lastName.trim(),
@@ -100,6 +102,8 @@ const Register = () => {
           "Ha ocurrido un error inesperado. Por favor, intentelo de nuevo mas tarde"
         );
       }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -246,8 +250,8 @@ const Register = () => {
             </div>
 
             <div className="auth-actions">
-              <button type="submit" className="auth-primary-button">
-                Registrarme
+              <button type="submit" className="auth-primary-button" disabled={isSubmitting}>
+                {isSubmitting ? "Creando cuenta..." : "Registrarme"}
               </button>
               <button
                 type="button"

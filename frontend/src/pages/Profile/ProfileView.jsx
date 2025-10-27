@@ -169,9 +169,6 @@ const ProfileView = () => {
                       Restablecer
                     </Button>
                   </div>
-                  <p className="text-muted small mt-3 mb-0">
-                    El correo y el DNI no pueden modificarse desde este panel.
-                  </p>
                 </Form>
               </Card.Body>
             </Card>
