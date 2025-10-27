@@ -43,14 +43,12 @@ const Login = () => {
       });
       navigate("/");
     } catch (err) {
-      if (err.code === "auth/invalid-login-credentials") {
-        setError("Los datos ingresados son incorrectos. Intente nuevamente.");
-      } else if (err.code === "auth/too-many-requests") {
+      if (err.code === "auth/too-many-requests") {
         setError(
           "Cuenta temporalmente bloqueada por intentos fallidos. Restablece tu contraseña o intenta mas tarde."
         );
       } else {
-        setError("No pudimos iniciar sesion. Intentalo mas tarde.");
+        setError("Los datos ingresados son incorrectos. Intente nuevamente.");
       }
     } finally {
       setIsSubmitting(false);
