@@ -97,12 +97,12 @@ const NavbarComp = () => {
           : (
           <div className="d-flex">
             <Link to="/login">
-              <button className="login-button">
+              <button className="auth-nav-btn login-nav-btn">
                 Iniciar sesión
               </button>
             </Link>
             <Link to="/register">
-              <button className="register-button mx-2">
+              <button className="auth-nav-btn">
                 Registrarse
               </button>
             </Link>

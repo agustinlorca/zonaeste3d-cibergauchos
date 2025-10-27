@@ -92,9 +92,9 @@ const Login = () => {
       <section className="auth-wrapper">
         <div className="auth-card">
           <header className="auth-card__header">
-            <h1 className="auth-card__title">Bienvenido nuevamente</h1>
+            <h1 className="auth-card__title">¡Bienvenido de nuevo!</h1>
             <p className="auth-card__subtitle">
-              Inicia sesion para seguir tus pedidos y finalizar tus compras
+              Inicia sesión para seguir tus pedidos y finalizar tus compras
             </p>
           </header>
 
@@ -133,13 +133,13 @@ const Login = () => {
             </div>
 
             <div className="auth-secondary-action auth-secondary-action--center">
-              <button type="button" className="auth-ghost-button" onClick={handleResetPassword}>
+              <button type="button" className="auth-ghost-button login-ghost-button" onClick={handleResetPassword}>
                 Olvide mi contraseña
               </button>
             </div>
 
             <div className="auth-actions">
-              <button type="submit" className="auth-primary-button login-btn" disabled={isSubmitting}>
+              <button type="submit" className="auth-primary-button auth-primary-login-btn" disabled={isSubmitting}>
                 {isSubmitting ? (
                   <>
                     <span className="auth-spinner auth-spinner--light" />Ingresando...

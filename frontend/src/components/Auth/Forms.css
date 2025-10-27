@@ -4,7 +4,6 @@
   align-items: center;
   min-height: calc(100vh - 120px);
   padding: 4rem 1rem 3rem;
-  background: linear-gradient(180deg, #f8fbff 0%, #f5f7fa 100%);
 }
 
 .auth-card {
@@ -95,8 +94,7 @@
 
 .auth-input:focus {
   outline: none;
-  border-color: #1e8449;
-  box-shadow: 0 0 0 3px rgba(30, 132, 73, 0.18);
+  box-shadow: 0 0 0 1px rgba(75, 75, 75, 0.18);
 }
 
 .auth-input::placeholder {
@@ -109,7 +107,6 @@
   top: 50%;
   transform: translateY(-50%);
   cursor: pointer;
-  color: #1e8449;
 }
 
 .auth-secondary-action {
@@ -130,7 +127,9 @@
   padding: 0;
   font-size: 0.9rem;
 }
-
+.login-ghost-button{
+  color: #2056b4;
+}
 .auth-ghost-button:hover {
   text-decoration: underline;
 }
@@ -142,7 +141,7 @@
 }
 
 .auth-primary-button {
-  background: linear-gradient(135deg, #1e8449, #1a6f3d);
+  background-color: #28A745;
   color: #ffffff;
   border: none;
   border-radius: 999px;
@@ -152,17 +151,18 @@
   cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.2s ease;
 }
+.auth-primary-login-btn{
+  background-color: #0056b3 !important;
+}
 
 .auth-primary-button:hover {
   transform: translateY(-1px);
-  box-shadow: 0 12px 24px -12px rgba(30, 132, 73, 0.55);
+  box-shadow: 0 12px 24px -12px rgba(15, 90, 46, 0.55);
 }
 
-.auth-primary-button:disabled {
-  opacity: 0.65;
-  cursor: default;
-  transform: none;
-  box-shadow: none;
+.auth-primary-login-btn:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px -12px rgba(15, 26, 90, 0.55);
 }
 
 .auth-spinner {
@@ -192,7 +192,7 @@
 }
 
 .auth-footer a {
-  color: #1e8449;
+  color: #2e2e2e;
   font-weight: 600;
   text-decoration: none;
 }
@@ -213,8 +213,4 @@
   .auth-form__grid--two {
     grid-template-columns: 1fr;
   }
-}
-
-.auth-primary-button.login-btn {
-  width: 100%;
 }

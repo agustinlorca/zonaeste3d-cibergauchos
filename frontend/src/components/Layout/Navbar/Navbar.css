@@ -34,52 +34,26 @@
     display: none !important;
 }
 
-.login-button {
+.auth-nav-btn{
+    margin-right: 1.5vw;
+    min-width: 120px;
     border-radius: .5rem;
-    text-transform: uppercase;
-    font-style: normal;
-    font-weight: 400;
-    padding-left: 10px;
-    padding-right: 10px;
     color: #fff;
     height: 40px;
-    font-size: 0.7rem;
-    line-height: 14px;
-    letter-spacing: 1.2px;
-    transition: .2s .1s;
-    background-image: linear-gradient(90deg,#21283f,#1057da);
-    border: 0 solid;
-    overflow: hidden;
+    font-size: 0.9rem;
+    font-weight: 600;
+    background-color: #43a641;
+    border: none;
+    transition: transform 0.15s ease, box-shadow 0.2s ease;
 }
-  
-.login-button:hover {
-    cursor: pointer;
-    transition: all .3s ease-in;
-    padding-right: 20px;
-    padding-left: 20px;
+.login-nav-btn {
+    background: #2056b4;
 }
-
-.register-button {
-    border-radius: .5rem;
-    text-transform: uppercase;
-    font-style: normal;
-    font-weight: 400;
-    padding-left: 10px;
-    padding-right: 10px;
-    color: #fff;
-    height: 40px;
-    font-size: 0.7rem;
-    line-height: 14px;
-    letter-spacing: 1.2px;
-    transition: .2s .1s;
-    background-image: linear-gradient(90deg,#1d4613,hsl(113, 75%, 41%));
-    border: 0 solid;
-    overflow: hidden;
+.auth-nav-btn:hover{
+    background-color: #43a641;
+    box-shadow: 0 12px 24px -12px rgba(15, 90, 46, 0.55);
 }
-  
-.register-button:hover {
-    cursor: pointer;
-    transition: all .3s ease-in;
-    padding-right: 20px;
-    padding-left: 20px;
+.login-nav-btn:hover {
+    background: #2056b4;
+    box-shadow: 0 12px 24px -12px rgba(15, 26, 90, 0.55);
 }
