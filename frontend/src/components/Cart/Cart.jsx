@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Trash3, X } from "react-bootstrap-icons";
 import Swal from "sweetalert2";
 
@@ -9,6 +9,7 @@ import { AuthCtxt } from "../../context/AuthContext";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "/api";
 
 const Cart = () => {
+  const navigate = useNavigate();
   const { user } = useContext(AuthCtxt);
   const {
     cartList,
@@ -148,6 +149,27 @@ const Cart = () => {
         title: "El carrito esta vacio",
         text: "Agrega productos antes de continuar con el pago.",
       });
+      return;
+    }
+
+    if (!user) {
+      const result = await Swal.fire({
+        icon: "warning",
+        title: "Necesitas una cuenta",
+        text: "Inicia sesion o registrate para completar tu compra.",
+        showDenyButton: true,
+        showCancelButton: true,
+        confirmButtonText: "Iniciar sesion",
+        denyButtonText: "Registrarme",
+        cancelButtonText: "Cancelar",
+      });
+
+      if (result.isConfirmed) {
+        navigate("/login");
+      } else if (result.isDenied) {
+        navigate("/register");
+      }
+
       return;
     }
 

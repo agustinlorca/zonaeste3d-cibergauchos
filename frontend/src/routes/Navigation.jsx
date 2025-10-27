@@ -4,7 +4,6 @@ import {
   CategoryView,
   ItemDetailView,
   CartView,
-  OrderSearchView,
   UserOrderView,
   OrderDetailView,
   NotFound,
@@ -40,11 +39,6 @@ const Navigation = () => {
     {
       path:"/register",
       element: <Register/>
-    }
-    ,
-    {
-      path: "/search-order",
-      element: <OrderSearchView/>
     }
     ,
     {
