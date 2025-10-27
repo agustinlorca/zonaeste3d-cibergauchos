@@ -1,12 +1,10 @@
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Trash3, X } from "react-bootstrap-icons";
 import Swal from "sweetalert2";
 
 import { CartStateContext } from "../../context/CartContext";
 import { AuthCtxt } from "../../context/AuthContext";
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "/api";
 
 const Cart = () => {
   const navigate = useNavigate();
@@ -19,128 +17,6 @@ const Cart = () => {
     calcTotalPrice,
     subTotal,
   } = useContext(CartStateContext);
-  const [isProcessing, setIsProcessing] = useState(false);
-
-  const collectCheckoutData = async () => {
-    const defaultEmail = user?.email ?? "";
-    const html = `
-      <div class="swal2-form">
-        <input id="buyer-name" class="swal2-input" placeholder="Nombre y apellido" />
-        <input id="buyer-phone" class="swal2-input" placeholder="Telefono" />
-        <input id="buyer-email" class="swal2-input" placeholder="Email" value="${defaultEmail}" />
-        ${user ? "" : '<input id="buyer-email-confirm" class="swal2-input" placeholder="Confirmar email" />'}
-        <div class="swal2-field" style="text-align:left;">
-          <label class="swal2-label" style="margin-bottom:8px; display:block;">Forma de entrega</label>
-          <div class="swal2-radio" style="display:flex; flex-direction:column; gap:6px;">
-            <label style="display:flex; align-items:center; gap:8px;">
-              <input type="radio" name="shipping-method" value="pickup" checked />
-              Retiro en sucursal
-            </label>
-            <label style="display:flex; align-items:center; gap:8px;">
-              <input type="radio" name="shipping-method" value="delivery" />
-              Envio a domicilio
-            </label>
-          </div>
-        </div>
-        <div id="delivery-fields" style="display:none">
-          <input id="shipping-street" class="swal2-input" placeholder="Calle" />
-          <input id="shipping-number" class="swal2-input" placeholder="Numero" />
-          <input id="shipping-city" class="swal2-input" placeholder="Ciudad" />
-          <input id="shipping-province" class="swal2-input" placeholder="Provincia" />
-          <input id="shipping-postal" class="swal2-input" placeholder="Codigo postal" />
-          <textarea id="shipping-notes" class="swal2-textarea" placeholder="Notas adicionales (opcional)"></textarea>
-        </div>
-      </div>
-    `;
-
-    const result = await Swal.fire({
-      title: "Datos de contacto y entrega",
-      html,
-      showCancelButton: true,
-      confirmButtonText: "Generar orden",
-      cancelButtonText: "Cancelar",
-      focusConfirm: false,
-      didOpen: () => {
-        const popup = Swal.getPopup();
-        const methodInputs = popup.querySelectorAll('input[name="shipping-method"]');
-        const deliveryFields = popup.querySelector("#delivery-fields");
-        const toggleDeliveryFields = () => {
-          const selected = popup.querySelector('input[name="shipping-method"]:checked');
-          if (selected?.value === "delivery") {
-            deliveryFields.style.display = "block";
-          } else {
-            deliveryFields.style.display = "none";
-          }
-        };
-        methodInputs.forEach((input) => input.addEventListener("change", toggleDeliveryFields));
-        toggleDeliveryFields();
-      },
-      preConfirm: () => {
-        const popup = Swal.getPopup();
-        const nombre = popup.querySelector("#buyer-name").value.trim();
-        const telefono = popup.querySelector("#buyer-phone").value.trim();
-        const email = popup.querySelector("#buyer-email").value.trim();
-        const confirmEmailInput = popup.querySelector("#buyer-email-confirm");
-        const confirmEmail = confirmEmailInput ? confirmEmailInput.value.trim() : email;
-        const method =
-          popup.querySelector('input[name="shipping-method"]:checked')?.value ?? "";
-
-        if (!nombre || !telefono || !email) {
-          Swal.showValidationMessage("Completa nombre, telefono y email.");
-          return false;
-        }
-
-        if (email !== confirmEmail) {
-          Swal.showValidationMessage("Los correos electronicos no coinciden.");
-          return false;
-        }
-
-        if (!method) {
-          Swal.showValidationMessage("Selecciona una forma de entrega.");
-          return false;
-        }
-
-        let shipping = { method };
-
-        if (method === "delivery") {
-          const street = popup.querySelector("#shipping-street").value.trim();
-          const number = popup.querySelector("#shipping-number").value.trim();
-          const city = popup.querySelector("#shipping-city").value.trim();
-          const province = popup.querySelector("#shipping-province").value.trim();
-          const postalCode = popup.querySelector("#shipping-postal").value.trim();
-          const notes = popup.querySelector("#shipping-notes").value.trim();
-
-          if (!street || !number || !city || !province || !postalCode) {
-            Swal.showValidationMessage("Completa todos los datos del domicilio.");
-            return false;
-          }
-
-          shipping = {
-            method: "delivery",
-            address: {
-              street,
-              number,
-              city,
-              province,
-              postalCode,
-              ...(notes ? { notes } : {}),
-            },
-          };
-        }
-
-        return {
-          buyer: { nombre, telefono, email },
-          shipping,
-        };
-      },
-    });
-
-    if (!result.isConfirmed) {
-      return null;
-    }
-
-    return result.value;
-  };
 
   const sendOrder = async () => {
     if (cartList.length === 0) {
@@ -173,93 +49,7 @@ const Cart = () => {
       return;
     }
 
-    const checkoutData = await collectCheckoutData();
-
-    if (!checkoutData) {
-      return;
-    }
-
-    if (!API_BASE_URL) {
-      await Swal.fire({
-        title: "Configuracion faltante",
-        text: "No se encontro la URL del backend. Revisa las variables de entorno.",
-        icon: "error",
-      });
-      return;
-    }
-
-    try {
-      setIsProcessing(true);
-
-      const buyerPayload =
-        checkoutData.buyer.nombre ||
-        checkoutData.buyer.telefono ||
-        checkoutData.buyer.email
-          ? {
-              ...(checkoutData.buyer.nombre
-                ? { nombre: checkoutData.buyer.nombre }
-                : {}),
-              ...(checkoutData.buyer.telefono
-                ? { telefono: checkoutData.buyer.telefono }
-                : {}),
-              ...(checkoutData.buyer.email
-                ? { email: checkoutData.buyer.email }
-                : {}),
-            }
-          : undefined;
-
-      const response = await fetch(`${API_BASE_URL}/checkout`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          buyer: buyerPayload,
-          shipping: checkoutData.shipping,
-          items: cartList.map((item) => ({
-            id: item.id,
-            nombre: item.nombre,
-            precio: item.precio,
-            cantidad: item.qty,
-            imgUrl: item.imgUrl,
-          })),
-        }),
-      });
-
-      if (!response.ok) {
-        const errorBody = await response.json().catch(() => ({}));
-        throw new Error(errorBody.message || "No se pudo iniciar el pago.");
-      }
-
-      const data = await response.json();
-      const redirectUrl = data.initPoint || data.sandboxInitPoint;
-
-      if (!redirectUrl) {
-        throw new Error("Mercado Pago no devolvio una URL de pago.");
-      }
-
-      sessionStorage.setItem("zonaeste3d:lastOrderId", data.orderId);
-      sessionStorage.setItem("zonaeste3d:lastOrderStatus", "pending");
-
-      removeCartList();
-
-      await Swal.fire({
-        title: "Redirigiendo a Mercado Pago",
-        text: "Te llevaremos al checkout para completar el pago.",
-        icon: "success",
-        confirmButtonText: "Continuar",
-      });
-
-      window.location.href = redirectUrl;
-    } catch (error) {
-      await Swal.fire({
-        title: "Error al procesar el pago",
-        text: error.message,
-        icon: "error",
-      });
-    } finally {
-      setIsProcessing(false);
-    }
+    navigate("/checkout");
   };
 
   return (
@@ -313,7 +103,6 @@ const Cart = () => {
                         <button
                           className="btn btn-light"
                           onClick={() => deleteCartItem(cartItem.id)}
-                          disabled={isProcessing}
                         >
                           <X size="20" color="red" /> Eliminar
                         </button>
@@ -327,7 +116,6 @@ const Cart = () => {
                 <button
                   className="btn btn-light"
                   onClick={() => removeCartList()}
-                  disabled={isProcessing}
                 >
                   <Trash3 color="royalblue" /> Limpiar carrito
                 </button>
@@ -364,9 +152,8 @@ const Cart = () => {
                   <button
                     className="btn btn-success w-100 border mt-2"
                     onClick={sendOrder}
-                    disabled={isProcessing}
                   >
-                    {isProcessing ? "Generando pago..." : "Terminar mi compra"}
+                    Ir al checkout
                   </button>
                   <Link to="/" className="btn btn-light w-100 border mt-2">
                     Seguir Comprando

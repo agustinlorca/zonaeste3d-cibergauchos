@@ -8,6 +8,7 @@ import {
   OrderDetailView,
   NotFound,
   AdminDashboard,
+  CheckoutView,
 } from "../pages";
 import Login from "../components/Auth/Login";
 import Register from "../components/Auth/Register";
@@ -30,6 +31,10 @@ const Navigation = () => {
     {
       path: "/cart",
       element: <CartView/>
+    },
+    {
+      path: "/checkout",
+      element: <CheckoutView/>
     },
     {
       path:"/login",
