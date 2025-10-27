@@ -112,72 +112,6 @@
   color: #1e8449;
 }
 
-
-
-.auth-link {
-  color: #1e8449;
-  font-weight: 600;
-  text-decoration: none;
-  font-size: 0.9rem;
-}
-
-.auth-link:hover {
-  text-decoration: underline;
-}
-
-
-
-
-
-.auth-primary-button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 12px 24px -12px rgba(30, 132, 73, 0.55);
-}
-
-
-
-.auth-google-button:hover {
-  border-color: #bfc7d7;
-  box-shadow: 0 10px 24px -18px rgba(15, 23, 42, 0.35);
-}
-
-.auth-footer {
-  text-align: center;
-  font-size: 0.9rem;
-  color: #64748b;
-}
-
-.auth-footer a {
-  color: #1e8449;
-  font-weight: 600;
-  text-decoration: none;
-}
-
-.auth-footer a:hover {
-  text-decoration: underline;
-}
-
-@media (max-width: 680px) {
-  .auth-card {
-    padding: 2rem 1.5rem 1.75rem;
-  }
-
-  .auth-form__grid--two {
-    grid-template-columns: 1fr;
-  }
-}
-
-
-
-.auth-ghost-button:hover {
-  text-decoration: underline;
-}
-
-
-.auth-secondary-action--center {
-  justify-content: center;
-}
-
 .auth-secondary-action {
   display: flex;
   justify-content: flex-end;
@@ -231,32 +165,6 @@
   box-shadow: none;
 }
 
-.auth-google-button {
-  background: #ffffff;
-  border: 1px solid #d8e0ec;
-  border-radius: 999px;
-  padding: 0.7rem 1rem;
-  font-weight: 600;
-  color: #475569;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.6rem;
-  cursor: pointer;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.auth-google-button:hover {
-  border-color: #bfc7d7;
-  box-shadow: 0 10px 24px -18px rgba(15, 23, 42, 0.35);
-}
-
-.auth-google-button:disabled {
-  opacity: 0.6;
-  cursor: default;
-  box-shadow: none;
-}
-
 .auth-spinner {
   width: 16px;
   height: 16px;
@@ -271,12 +179,42 @@
   color: #ffffff;
 }
 
-.auth-spinner--dark {
-  color: #1e8449;
-}
-
 @keyframes auth-spin {
   to {
     transform: rotate(360deg);
   }
+}
+
+.auth-footer {
+  text-align: center;
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+.auth-footer a {
+  color: #1e8449;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.auth-footer a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 680px) {
+  .auth-card {
+    padding: 2rem 1.5rem 1.75rem;
+  }
+
+  .auth-card--wide {
+    width: 100%;
+  }
+
+  .auth-form__grid--two {
+    grid-template-columns: 1fr;
+  }
+}
+
+.auth-primary-button.login-btn {
+  width: 100%;
 }

@@ -4,8 +4,6 @@ import { auth, db } from "../firebase/credentials";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  GoogleAuthProvider,
-  signInWithPopup,
   sendPasswordResetEmail,
   onAuthStateChanged,
   signOut,
@@ -108,15 +106,6 @@ const AuthContext = ({ children }) => {
     setUser(formatUser(firebaseUser, profile));
   };
 
-  const loginWithGoogle = async () => {
-    const googleProvider = new GoogleAuthProvider();
-    const userCredential = await signInWithPopup(auth, googleProvider);
-    const firebaseUser = userCredential.user;
-    const profile = await ensureUserProfile(firebaseUser, {
-      displayName: firebaseUser.displayName ?? "",
-    });
-    setUser(formatUser(firebaseUser, profile));
-  };
 
   const resetPassword = async (email) => {
     try {
@@ -193,7 +182,6 @@ const AuthContext = ({ children }) => {
         register,
         login,
         logout,
-        loginWithGoogle,
         resetPassword,
         updateUserProfile,
       }}
