@@ -9,6 +9,7 @@ import {
   NotFound,
   AdminDashboard,
   CheckoutView,
+  ProfileView,
 } from "../pages";
 import Login from "../components/Auth/Login";
 import Register from "../components/Auth/Register";
@@ -46,9 +47,13 @@ const Navigation = () => {
       element: <Register/>
     }
     ,
-    {
-    path: "/my-orders",
-    element: <UserOrderView/>
+        {
+      path: "/my-orders",
+      element: <UserOrderView/>
+    },
+        {
+      path: "/profile",
+      element: <ProfileView/>
     },
     {
       path: "/order/:orderID",

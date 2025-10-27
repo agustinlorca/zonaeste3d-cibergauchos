@@ -79,6 +79,9 @@ const NavbarComp = () => {
           ? (
           <Nav className="ml-auto" >
             <NavDropdown title={<PersonFill color="#1f5570" size={30}/>}>
+              <NavDropdown.Item as={Link} to="/profile" className="text-decoration-none text-black">
+                Mi perfil
+              </NavDropdown.Item>
               <NavDropdown.Item as={Link} to="/my-orders" className="text-decoration-none text-black">
                 Mis pedidos
               </NavDropdown.Item>

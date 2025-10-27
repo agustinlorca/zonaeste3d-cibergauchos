@@ -1,27 +1,29 @@
 import { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { AuthCtxt } from "../../context/AuthContext";
-
-import Layout from "../Layout/Layout";
-import "./Forms.css";
 import { Google, EyeFill, EyeSlashFill } from "react-bootstrap-icons";
 import Swal from "sweetalert2";
 import { toast } from "react-toastify";
+
+import Layout from "../Layout/Layout";
+import { AuthCtxt } from "../../context/AuthContext";
+import "./Forms.css";
 
 const Login = () => {
   const { login, loginWithGoogle, resetPassword } = useContext(AuthCtxt);
   const navigate = useNavigate();
   const [user, setUser] = useState({ email: "", password: "" });
-  const [error, setError] = useState();
+  const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = ({ target: { name, value } }) => {
-    setUser({ ...user, [name]: value });
-  };
-  const handleSubmit = async (e) => {
-    const { email, password } = user;
     setError("");
-    e.preventDefault();
+    setUser((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const { email, password } = user;
+
     if (!email.trim() || !password.trim()) {
       setError("Debe completar todos los campos.");
       return;
@@ -29,29 +31,27 @@ const Login = () => {
 
     try {
       await login(email, password);
-      toast.success(`Inicio de sesión exitoso`, {
+      toast.success("Inicio de sesion exitoso", {
         position: "top-center",
         autoClose: 1500,
         hideProgressBar: true,
         closeOnClick: false,
         pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
       });
       navigate("/");
     } catch (err) {
       if (err.code === "auth/invalid-login-credentials") {
         setError("Los datos ingresados son incorrectos. Intente nuevamente.");
-      }
-      if (err.code === "auth/too-many-requests") {
+      } else if (err.code === "auth/too-many-requests") {
         setError(
-          "Esta cuenta ha sido temporalmente desactivada debido a que has superado la" +
-            "cantidad de ingresos fallidos. Puedes restablecer tu contraseña o intenta de nuevo más tarde."
+          "Cuenta temporalmente bloqueada por intentos fallidos. Restablecé tu contraseña o intenta más tarde."
         );
+      } else {
+        setError("No pudimos iniciar sesión. Intentalo más tarde.");
       }
     }
   };
+
   const handleGoogleLogin = async () => {
     try {
       await loginWithGoogle();
@@ -59,83 +59,114 @@ const Login = () => {
     } catch (err) {
       if (err.code === "auth/popup-closed-by-user") {
         setError(
-          "Error al iniciar sesión con google. Asegúrate de seleccionar una cuenta antes de cerrar la ventana."
+          "Error al iniciar sesion con Google. Selecciona una cuenta antes de cerrar la ventana."
         );
       }
     }
   };
+
   const handleResetPassword = async () => {
     const { value: email } = await Swal.fire({
-      title: "Restablecer contraseña",
+      title: "Restablecer contrasena",
       input: "email",
-      inputLabel: "Ingresa tu correo electrónico",
-      inputPlaceholder: "email",
+      inputLabel: "Ingresa tu correo electronico",
       showCancelButton: true,
+      confirmButtonText: "Enviar",
+      cancelButtonText: "Cancelar",
       inputValidator: (value) => {
         if (!value) {
-          return "Por favor ingresa un email";
+          return "Ingresa un email valido";
         }
+        return null;
       },
     });
-    if (email) {
-      console.log("email proporcionado", email);
-      try {
-        await resetPassword(email);
-        Swal.fire(
-          "Éxito",
-          "Se ha enviado un enlace al correo electrónico proporcionado",
-          "success"
-        );
-      } catch (err) {
-        console.error("Error al restablecer la contraseña", err);
-        Swal.fire("Error", err.message, "error");
-      }
-      navigate("/");
+
+    if (!email) {
+      return;
+    }
+
+    try {
+      await resetPassword(email);
+      Swal.fire("Listo", "Te enviamos un enlace para recuperar tu contraseña", "success");
+    } catch (err) {
+      Swal.fire("Error", err.message, "error");
     }
   };
+
   const handleShowPassword = () => {
-    setShowPassword(!showPassword)
-  }
+    setShowPassword((prev) => !prev);
+  };
+
   return (
     <Layout>
-      <div className="login-container">
-        <div className="form-box form-box-bg-login">
-          <form className="form" onSubmit={handleSubmit}>
-            <span className="title">Iniciar sesión</span>
-            {error && <span className="error">{error}</span>}
-            <div className="form-container">
-              <input name="email" type="email" className="input" placeholder="Email" onChange={handleChange}/>
-              <div className="password-input-container" >
+      <section className="auth-wrapper">
+        <div className="auth-card">
+          <header className="auth-card__header">
+            <h1 className="auth-card__title">Bienvenido nuevamente</h1>
+            <p className="auth-card__subtitle">
+              Inicia sesión para seguir tus pedidos y finalizar tus compras
+            </p>
+          </header>
+
+          {error && <div className="auth-error">{error}</div>}
+
+          <form className="auth-form" onSubmit={handleSubmit}>
+            <div className="auth-form__group">
+              <label className="auth-label" htmlFor="email">Email</label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                className="auth-input"
+                placeholder="tu@email.com"
+                value={user.email}
+                onChange={handleChange}
+              />
+            </div>
+
+            <div className="auth-form__group">
+              <label className="auth-label" htmlFor="password">Contraseña</label>
+              <div className="auth-input-wrapper">
                 <input
+                  id="password"
                   name="password"
                   type={showPassword ? "text" : "password"}
-                  className="input"
-                  placeholder="Contraseña"
+                  className="auth-input"
+                  placeholder="Tu contrasena"
+                  value={user.password}
                   onChange={handleChange}
                 />
-                <span className="password-toggle-icon" onClick={handleShowPassword}>
+                <span className="auth-toggle" onClick={handleShowPassword}>
                   {showPassword ? <EyeSlashFill /> : <EyeFill />}
                 </span>
               </div>
             </div>
-            <a href="#" className="forgot-password" onClick={handleResetPassword}>
-              Restablecer contraseña
-            </a>
-            <button className="login-btn">Ingresar</button>
+
+            <div className="auth-secondary-action">
+              <button type="button" className="auth-ghost-button" onClick={handleResetPassword}>
+                Olvidé mi contraseña
+              </button>
+            </div>
+
+            <div className="auth-actions">
+              <button type="submit" className="auth-primary-button">
+                Ingresar
+              </button>
+              <button
+                type="button"
+                className="auth-google-button"
+                onClick={handleGoogleLogin}
+              >
+                <Google size={20} color="red" /> Iniciar sesión con Google
+              </button>
+            </div>
           </form>
-          <hr />
-          <button className="google-login-button" onClick={handleGoogleLogin}>
-            <Google size={20} color="red" className="me-2" />
-            Iniciar sesión con google
-          </button>
-          <div className="form-section form-section-bg-login">
-            <p>
-              ¿Todavía no tienes una cuenta?
-              <Link to="/register"> Registrarse</Link>
-            </p>
-          </div>
+
+          <footer className="auth-footer">
+            ¿Todavía no tienes una cuenta? <Link to="/register">Regístrate</Link>
+          </footer>
         </div>
-      </div>
+      </section>
     </Layout>
   );
 };

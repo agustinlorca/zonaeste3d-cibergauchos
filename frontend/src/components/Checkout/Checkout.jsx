@@ -9,9 +9,10 @@ import { AuthCtxt } from "../../context/AuthContext";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "/api";
 
 const initialFormState = (user) => ({
-  nombre: user?.displayName ?? "",
-  telefono: "",
+  nombre: [user?.firstName, user?.lastName].filter(Boolean).join(" "),
+  telefono: user?.phone ?? "",
   email: user?.email ?? "",
+  dni: user?.dni ?? "",
   shippingMethod: "pickup",
   street: "",
   number: "",
@@ -36,10 +37,16 @@ const Checkout = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const isRedirectingRef = useRef(false);
   useEffect(() => {
+    const combinedName = [user?.firstName, user?.lastName]
+      .filter(Boolean)
+      .join(" ");
+
     setForm((prev) => ({
       ...prev,
-      email: prev.email || user?.email || "",
-      nombre: prev.nombre || user?.displayName || "",
+      email: user?.email ?? prev.email,
+      nombre: combinedName || prev.nombre,
+      telefono: user?.phone ?? prev.telefono,
+      dni: user?.dni ?? prev.dni,
     }));
   }, [user]);
 
@@ -78,11 +85,11 @@ const Checkout = () => {
 
 
   const validateForm = () => {
-    if (!form.nombre.trim() || !form.telefono.trim() || !form.email.trim()) {
+    if (!form.nombre.trim() || !form.telefono.trim() || !form.email.trim() || !form.dni.trim()) {
       Swal.fire({
         icon: "warning",
         title: "Datos incompletos",
-        text: "Completa tu nombre, telefono y email para continuar.",
+        text: "Completa tus datos personales desde Mi perfil antes de continuar.",
       });
       return false;
     }
@@ -147,6 +154,7 @@ const Checkout = () => {
       nombre: form.nombre.trim(),
       telefono: form.telefono.trim(),
       email: form.email.trim(),
+      dni: form.dni.trim(),
     };
 
     try {
@@ -219,44 +227,44 @@ const Checkout = () => {
                 <Row className="g-3">
                   <Col md={6}>
                     <Form.Group controlId="checkoutNombre">
-                      <Form.Label>Nombre y apellido *</Form.Label>
+                      <Form.Label>Nombre y apellido</Form.Label>
                       <Form.Control
                         type="text"
                         name="nombre"
                         value={form.nombre}
-                        onChange={handleChange}
-                        placeholder="Ej: Juan Perez"
-                        required
+                        readOnly
                       />
                     </Form.Group>
                   </Col>
-                  <Col md={3}>
+                  <Col md={6}>
                     <Form.Group controlId="checkoutTelefono">
-                      <Form.Label>Telefono *</Form.Label>
+                      <Form.Label>Telefono</Form.Label>
                       <Form.Control
                         type="tel"
                         name="telefono"
                         value={form.telefono}
-                        onChange={handleChange}
-                        placeholder="Ej: 1122334455"
-                        required
+                        readOnly
                       />
                     </Form.Group>
                   </Col>
-                  <Col md={3}>
+                  <Col md={6}>
                     <Form.Group controlId="checkoutEmail">
-                      <Form.Label>Email *</Form.Label>
-                      <Form.Control
-                        type="email"
-                        name="email"
-                        value={form.email}
-                        onChange={handleChange}
-                        placeholder="tu_correo@dominio.com"
-                        required
-                      />
+                      <Form.Label>Email</Form.Label>
+                      <Form.Control type="email" value={form.email} readOnly />
+                    </Form.Group>
+                  </Col>
+                  <Col md={6}>
+                    <Form.Group controlId="checkoutDni">
+                      <Form.Label>DNI</Form.Label>
+                      <Form.Control type="text" value={form.dni} readOnly />
                     </Form.Group>
                   </Col>
                 </Row>
+                <div className="mt-2">
+                  <small className="text-muted">
+                    Necesitas actualizar tus datos? <Link to="/profile">Ir a mi perfil</Link>
+                  </small>
+                </div>
 
                 <hr className="my-4" />
 
