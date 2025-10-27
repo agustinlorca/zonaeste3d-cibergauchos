@@ -217,15 +217,13 @@ const AdminDashboard = () => {
             <h1 className="fw-bold mb-0 text-primary">Panel de administracion</h1>
             <ButtonGroup>
               <Button
-                variant="primary"
-                active={activeSection === "products"}
+                variant={activeSection === "products" ? "primary" : "outline-primary"}
                 onClick={() => setActiveSection("products")}
               >
                 Gestionar productos
               </Button>
               <Button
-                variant="outline-primary"
-                active={activeSection === "orders"}
+                variant={activeSection === "orders" ? "primary" : "outline-primary"}
                 onClick={() => setActiveSection("orders")}
               >
                 Gestionar ordenes
@@ -245,15 +243,13 @@ const AdminDashboard = () => {
           <h1 className="fw-bold mb-0 text-primary">Panel de administracion</h1>
           <ButtonGroup>
             <Button
-              variant="primary"
-              active={activeSection === "products"}
+              variant={activeSection === "products" ? "primary" : "outline-primary"}
               onClick={() => setActiveSection("products")}
             >
               Gestionar productos
             </Button>
             <Button
-              variant="outline-primary"
-              active={activeSection === "orders"}
+              variant={activeSection === "orders" ? "primary" : "outline-primary"}
               onClick={() => setActiveSection("orders")}
             >
               Gestionar ordenes

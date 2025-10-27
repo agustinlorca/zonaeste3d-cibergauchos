@@ -84,18 +84,6 @@ const OrderDetail = ({ order }) => {
       </h2>
       <Col sm={4}>
         <Card className="card-info">
-          <Card.Header className="first-header">
-            <div className="d-flex flex-column gap-1">
-              <div className="d-flex justify-content-between align-items-center">
-                <span>Estado del pedido</span>
-                <Badge bg={fulfillmentInfo.variant}>{fulfillmentInfo.label}</Badge>
-              </div>
-              <div className="d-flex justify-content-between align-items-center">
-                <span>Estado de pago</span>
-                <Badge bg={paymentInfo.variant}>{paymentInfo.label}</Badge>
-              </div>
-            </div>
-          </Card.Header>
           <Card.Header className="second-header">
             <h5>Datos del pedido</h5>
           </Card.Header>
@@ -106,6 +94,18 @@ const OrderDetail = ({ order }) => {
             </p>
             <p className="fw-bold">
               <span className="primary-text">Fecha/hora:</span> {orderDate}
+            </p>
+            <p className="fw-bold d-flex align-items-center gap-2 flex-wrap">
+              <span className="primary-text">Estado del pedido:</span>
+              <Badge bg={fulfillmentInfo.variant} className="text-capitalize px-3 py-2">
+                {fulfillmentInfo.label}
+              </Badge>
+            </p>
+            <p className="fw-bold d-flex align-items-center gap-2 flex-wrap">
+              <span className="primary-text">Estado de pago:</span>
+              <Badge bg={paymentInfo.variant} className="text-capitalize px-3 py-2">
+                {paymentInfo.label}
+              </Badge>
             </p>
             <p className="fw-bold mb-1">
               <span className="primary-text">Forma de entrega:</span>{" "}
