@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import Container from "react-bootstrap/Container";
@@ -16,6 +16,29 @@ import { AuthCtxt } from "../../../context/AuthContext";
 const NavbarComp = () => {
   const navigate = useNavigate();
   const {user,logout,isAuthReady,isAdmin} = useContext(AuthCtxt);
+
+  const userDisplayName = useMemo(() => {
+    if (!user) {
+      return "";
+    }
+
+    const fullName = [user.firstName, user.lastName].filter(Boolean).join(" ").trim();
+
+    if (fullName) {
+      return fullName;
+    }
+
+    const fallbackName = user.username ?? user.displayName ?? "";
+    if (typeof fallbackName === "string" && fallbackName.trim()) {
+      return fallbackName.trim();
+    }
+
+    if (typeof user.email === "string" && user.email.trim()) {
+      return user.email.trim();
+    }
+
+    return "Mi cuenta";
+  }, [user]);
   
   const handleLogout = async () =>{
     await logout();
@@ -73,7 +96,19 @@ const NavbarComp = () => {
           user 
           ? (
           <Nav className="ml-auto" >
-            <NavDropdown title={<PersonFill color="#1f5570" size={30}/>}>
+            <NavDropdown
+              title={(
+                <span className="d-inline-flex align-items-center gap-2">
+                  <span>¡Hola</span>
+                  <span className="fw-semibold">{user.firstName}!</span>
+                  <PersonFill color="#1f5570" size={22}/>
+                </span>
+              )}
+            >
+              <NavDropdown.Item as={Link} to="/profile" className="fw-semibold text-decoration-none text-black">
+                {userDisplayName}
+              </NavDropdown.Item>
+              <NavDropdown.Divider />
               <NavDropdown.Item as={Link} to="/profile" className="text-decoration-none text-black">
                 Mi perfil
               </NavDropdown.Item>
@@ -86,7 +121,7 @@ const NavbarComp = () => {
                 </NavDropdown.Item>
               )}
               <NavDropdown.Divider />
-              <NavDropdown.Item onClick={handleLogout} className="text-danger">Cerrar sesión</NavDropdown.Item>
+              <NavDropdown.Item onClick={handleLogout} className="fw-semibold text-danger">Cerrar sesión</NavDropdown.Item>
           </NavDropdown>
           </Nav>)
           : (
