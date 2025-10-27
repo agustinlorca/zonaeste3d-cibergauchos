@@ -1,7 +1,7 @@
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 
-import { doc, getDoc } from "firebase/firestore";
+import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../../firebase/credentials";
 
 import SpinnerLoader from "../SpinnerLoader/SpinnerLoader";
@@ -22,25 +22,35 @@ const OrderDetailContainer = () => {
   const [isConfirming, setIsConfirming] = useState(false);
   const { orderID } = useParams();
 
-  const getOrder = useCallback(async () => {
-    setIsLoading(true);
+  useEffect(() => {
     const collectionName = "orders";
     const orderRef = doc(db, collectionName, orderID);
-    const response = await getDoc(orderRef);
 
-    if (response.exists()) {
-      const orderFormat = { id: response.id, ...response.data() };
-      setOrder(orderFormat);
-      setIsLoading(false);
-    } else {
-      setIsLoading(false);
-      navigate("/not-found", { replace: true });
-    }
+    setIsLoading(true);
+
+    const unsubscribe = onSnapshot(
+      orderRef,
+      (snapshot) => {
+        if (!snapshot.exists()) {
+          setIsLoading(false);
+          navigate("/not-found", { replace: true });
+          return;
+        }
+
+        setOrder({ id: snapshot.id, ...snapshot.data() });
+        setIsLoading(false);
+      },
+      (error) => {
+        // eslint-disable-next-line no-console
+        console.error("Error obteniendo la orden:", error);
+        setIsLoading(false);
+      }
+    );
+
+    return () => {
+      unsubscribe();
+    };
   }, [navigate, orderID]);
-
-  useEffect(() => {
-    getOrder();
-  }, [getOrder]);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -100,17 +110,19 @@ const OrderDetailContainer = () => {
         if (!response.ok) {
           // eslint-disable-next-line no-console
           console.error("No se pudo confirmar la orden:", response.status);
+          if (!isCancelled) {
+            setIsConfirming(false);
+          }
           return;
-        }
-
-        if (!isCancelled) {
-          await getOrder();
         }
       } catch (error) {
         // eslint-disable-next-line no-console
         console.error("Error confirmando la orden:", error);
-      } finally {
         if (!isCancelled) {
+          setIsConfirming(false);
+        }
+      } finally {
+        if (isCancelled) {
           setIsConfirming(false);
         }
       }
@@ -122,8 +134,6 @@ const OrderDetailContainer = () => {
       isCancelled = true;
     };
   }, [
-    API_BASE_URL,
-    getOrder,
     isConfirming,
     isLoading,
     order?.id,
@@ -131,6 +141,16 @@ const OrderDetailContainer = () => {
     orderID,
     paymentStatus,
   ]);
+
+  useEffect(() => {
+    if (!isConfirming) {
+      return;
+    }
+
+    if (order.paymentConfirmed) {
+      setIsConfirming(false);
+    }
+  }, [isConfirming, order.paymentConfirmed]);
 
   const renderStatusAlert = () => {
     if (!paymentStatus) {
