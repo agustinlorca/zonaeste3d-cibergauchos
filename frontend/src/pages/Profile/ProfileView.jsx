@@ -95,7 +95,7 @@ const ProfileView = () => {
         <Row className="justify-content-center">
           <Col lg={8} xl={6}>
             <Card className="shadow-sm border-0">
-              <Card.Header className="bg-primary text-white">
+              <Card.Header className="bg-success text-white">
                 <h1 className="h4 mb-0">Mi perfil</h1>
               </Card.Header>
               <Card.Body>
@@ -151,7 +151,7 @@ const ProfileView = () => {
                     </Col>
                   </Row>
                   <div className="d-flex gap-2 mt-4">
-                    <Button type="submit" variant="primary" disabled={isSaving}>
+                    <Button type="submit" variant="success" disabled={isSaving}>
                       {isSaving ? "Guardando..." : "Guardar cambios"}
                     </Button>
                     <Button

@@ -334,11 +334,11 @@ const AdminOrdersPanel = () => {
                           </option>
                         ))}
                       </Form.Select>
-                      <div className="mt-2">
+                      <div className="mt-2 text-center">
                         <Badge bg={statusVariant}>{statusLabel}</Badge>
                       </div>
                     </td>
-                    <td>
+                    <td className="text-center">
                       <Badge bg={paymentVariant}>{paymentLabel}</Badge>
                     </td>
                     <td>{getShippingSummary(order.shipping)}</td>

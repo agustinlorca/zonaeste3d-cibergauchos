@@ -219,7 +219,7 @@ const Checkout = () => {
       <Row className="g-4">
         <Col lg={8}>
           <Card className="shadow-sm border-0">
-            <Card.Header className="bg-primary text-white">
+            <Card.Header className="bg-secondary text-white">
               <h2 className="h5 mb-0">Datos para el checkout</h2>
             </Card.Header>
             <Card.Body>
@@ -432,11 +432,6 @@ const Checkout = () => {
           </Card>
         </Col>
       </Row>
-      <div className="text-center mt-4">
-        <Link to="/" className="text-decoration-none">
-          <Button variant="link">Seguir explorando productos</Button>
-        </Link>
-      </div>
     </section>
   );
 };

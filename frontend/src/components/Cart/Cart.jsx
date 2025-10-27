@@ -131,16 +131,8 @@ const Cart = () => {
                   <p className="mb-4 fs-5 fw-bold">Resumen de compra</p>
                 </div>
                 <div className="d-flex justify-content-between">
-                  <p className="mb-2">Cantidad total:</p>
+                  <p className="mb-2">Cantidad de productos:</p>
                   <p className="mb-2 fw-bold">{calcTotalQuantity()}</p>
-                </div>
-                <div className="d-flex justify-content-between">
-                  <p className="mb-2">Envio:</p>
-                  <p className="mb-2 fw-bold">-</p>
-                </div>
-                <div className="d-flex justify-content-between">
-                  <p className="mb-2">Desc:</p>
-                  <p className="mb-2 fw-bold">-</p>
                 </div>
                 <hr />
                 <div className="d-flex justify-content-between">
@@ -150,7 +142,7 @@ const Cart = () => {
 
                 <div className="mt-3">
                   <button
-                    className="btn btn-success w-100 border mt-2"
+                    className="btn btn-primary w-100 border mt-2"
                     onClick={sendOrder}
                   >
                     Ir al checkout

@@ -62,11 +62,6 @@ const NavbarComp = () => {
             <Link to="/category/impresoras" className="nav-link">
               Impresoras
             </Link>
-            {isAdmin && (
-              <Link to="/admin" className="nav-link">
-                Admin
-              </Link>
-            )}
             <Nav.Link className="nav-link" href="#footer">
               Contacto
             </Nav.Link>
