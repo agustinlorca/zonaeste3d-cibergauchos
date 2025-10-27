@@ -1,17 +1,18 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { EyeFill, EyeSlashFill } from "react-bootstrap-icons";
 import Swal from "sweetalert2";
 
 import Layout from "../Layout/Layout";
 import { AuthCtxt } from "../../context/AuthContext";
+import SpinnerLoader from "../SpinnerLoader/SpinnerLoader";
 import "./Forms.css";
 
 const Register = () => {
-  const { register } = useContext(AuthCtxt);
+  const { register, user, isAuthReady } = useContext(AuthCtxt);
   const navigate = useNavigate();
 
-  const [user, setUser] = useState({
+  const [formValues, setFormValues] = useState({
     firstName: "",
     lastName: "",
     phone: "",
@@ -26,7 +27,7 @@ const Register = () => {
 
   const handleChange = ({ target: { name, value } }) => {
     setError("");
-    setUser((prev) => ({ ...prev, [name]: value }));
+    setFormValues((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (event) => {
@@ -40,7 +41,7 @@ const Register = () => {
       email,
       password,
       confirmPassword,
-    } = user;
+    } = formValues;
 
     if (
       !firstName.trim() ||
@@ -113,6 +114,20 @@ const Register = () => {
     setShowPassword((prev) => !prev);
   };
 
+  useEffect(() => {
+    if (isAuthReady && user) {
+      navigate("/", { replace: true });
+    }
+  }, [isAuthReady, navigate, user]);
+
+  if (!isAuthReady || user) {
+    return (
+      <Layout>
+        <SpinnerLoader />
+      </Layout>
+    );
+  }
+
   return (
     <Layout>
       <section className="auth-wrapper">
@@ -136,7 +151,7 @@ const Register = () => {
                   type="text"
                   className="auth-input"
                   placeholder="Nombre"
-                  value={user.firstName}
+                  value={formValues.firstName}
                   onChange={handleChange}
                 />
               </div>
@@ -148,7 +163,7 @@ const Register = () => {
                   type="text"
                   className="auth-input"
                   placeholder="Apellido"
-                  value={user.lastName}
+                  value={formValues.lastName}
                   onChange={handleChange}
                 />
               </div>
@@ -160,7 +175,7 @@ const Register = () => {
                   type="tel"
                   className="auth-input"
                   placeholder="Ej: 1122334455"
-                  value={user.phone}
+                  value={formValues.phone}
                   onChange={handleChange}
                 />
               </div>
@@ -172,7 +187,7 @@ const Register = () => {
                   type="text"
                   className="auth-input"
                   placeholder="Ej: 12345678"
-                  value={user.dni}
+                  value={formValues.dni}
                   onChange={handleChange}
                 />
               </div>
@@ -184,7 +199,7 @@ const Register = () => {
                   type="email"
                   className="auth-input"
                   placeholder="tu@email.com"
-                  value={user.email}
+                  value={formValues.email}
                   onChange={handleChange}
                 />
               </div>
@@ -197,7 +212,7 @@ const Register = () => {
                     type={showPassword ? "text" : "password"}
                     className="auth-input"
                     placeholder="Crear contraseña"
-                    value={user.password}
+                  value={formValues.password}
                     onChange={handleChange}
                   />
                   <span className="auth-toggle" onClick={togglePasswordVisibility}>
@@ -214,7 +229,7 @@ const Register = () => {
                     type={showPassword ? "text" : "password"}
                     className="auth-input"
                     placeholder="Repetir contraseña"
-                    value={user.confirmPassword}
+                  value={formValues.confirmPassword}
                     onChange={handleChange}
                   />
                   <span className="auth-toggle" onClick={togglePasswordVisibility}>

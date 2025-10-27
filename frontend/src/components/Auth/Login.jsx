@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { EyeFill, EyeSlashFill } from "react-bootstrap-icons";
 import Swal from "sweetalert2";
@@ -6,10 +6,11 @@ import { toast } from "react-toastify";
 
 import Layout from "../Layout/Layout";
 import { AuthCtxt } from "../../context/AuthContext";
+import SpinnerLoader from "../SpinnerLoader/SpinnerLoader";
 import "./Forms.css";
 
 const Login = () => {
-  const { login, resetPassword } = useContext(AuthCtxt);
+  const { login, resetPassword, user, isAuthReady } = useContext(AuthCtxt);
   const navigate = useNavigate();
 
   const [credentials, setCredentials] = useState({ email: "", password: "" });
@@ -86,6 +87,20 @@ const Login = () => {
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
   };
+
+  useEffect(() => {
+    if (isAuthReady && user) {
+      navigate("/", { replace: true });
+    }
+  }, [isAuthReady, navigate, user]);
+
+  if (!isAuthReady || user) {
+    return (
+      <Layout>
+        <SpinnerLoader />
+      </Layout>
+    );
+  }
 
   return (
     <Layout>
