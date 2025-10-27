@@ -20,6 +20,10 @@ const ItemDetailContainer = () => {
     
     if(response.exists()) {
       const productFormat = {id: response.id, ...response.data()}
+      if (Number(productFormat.stock ?? 0) <= 0) {
+        navigate('/not-found', { replace: true });
+        return;
+      }
       setProduct(productFormat)
       setIsLoading(false)
     }else{

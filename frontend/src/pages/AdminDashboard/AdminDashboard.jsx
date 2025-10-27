@@ -9,13 +9,14 @@ import {
   query,
   updateDoc,
 } from "firebase/firestore";
-import { Container, Row, Col, Form, Button, Table, Badge } from "react-bootstrap";
+import { Container, Row, Col, Form, Button, Table, Badge, ButtonGroup } from "react-bootstrap";
 import { PencilSquare, Trash3 } from "react-bootstrap-icons";
 import { toast } from "react-toastify";
 
 import { db } from "../../firebase/credentials";
 import SpinnerLoader from "../../components/SpinnerLoader/SpinnerLoader";
 import Layout from "../../components/Layout/Layout";
+import AdminOrdersPanel from "../../components/AdminOrdersPanel/AdminOrdersPanel";
 
 const PRODUCTS_COLLECTION = "products";
 
@@ -39,6 +40,7 @@ const AdminDashboard = () => {
   const [editingId, setEditingId] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
+  const [activeSection, setActiveSection] = useState("products");
 
   useEffect(() => {
     const productsRef = collection(db, PRODUCTS_COLLECTION);
@@ -207,10 +209,57 @@ const AdminDashboard = () => {
     }
   };
 
+  if (activeSection === "orders") {
+    return (
+      <Layout>
+        <Container style={{ marginTop: "6rem", marginBottom: "3rem" }}>
+          <div className="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-4">
+            <h1 className="fw-bold mb-0 text-primary">Panel de administracion</h1>
+            <ButtonGroup>
+              <Button
+                variant="primary"
+                active={activeSection === "products"}
+                onClick={() => setActiveSection("products")}
+              >
+                Gestionar productos
+              </Button>
+              <Button
+                variant="outline-primary"
+                active={activeSection === "orders"}
+                onClick={() => setActiveSection("orders")}
+              >
+                Gestionar ordenes
+              </Button>
+            </ButtonGroup>
+          </div>
+          <AdminOrdersPanel />
+        </Container>
+      </Layout>
+    );
+  }
+
   return (
     <Layout>
-    <Container style={{ marginTop: "6rem", marginBottom: "3rem" }}>
-      <h1 className="fw-bold mb-4 text-primary">Panel de administracion</h1>
+      <Container style={{ marginTop: "6rem", marginBottom: "3rem" }}>
+        <div className="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-4">
+          <h1 className="fw-bold mb-0 text-primary">Panel de administracion</h1>
+          <ButtonGroup>
+            <Button
+              variant="primary"
+              active={activeSection === "products"}
+              onClick={() => setActiveSection("products")}
+            >
+              Gestionar productos
+            </Button>
+            <Button
+              variant="outline-primary"
+              active={activeSection === "orders"}
+              onClick={() => setActiveSection("orders")}
+            >
+              Gestionar ordenes
+            </Button>
+          </ButtonGroup>
+      </div>
       <Row className="g-4">
         <Col lg={5}>
           <div className="card shadow-sm p-4">

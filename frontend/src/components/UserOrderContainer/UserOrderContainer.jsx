@@ -18,6 +18,12 @@ const UserOrderContainer = () => {
     const [isLoading, setIsLoading] = useState(true);
 
     const getOrders = async() => {
+        if (!user) {
+          setOrders([]);
+          setIsLoading(false);
+          return;
+        }
+        setIsLoading(true);
         const collectionName = "orders";
         const ordersRef = collection(db, collectionName);
         const orderQuery = user ? query(ordersRef, where("buyer.email", "==", user.email)) : ordersRef;
@@ -25,12 +31,17 @@ const UserOrderContainer = () => {
         const orderListFormat = response.docs.map((order) => (
           {id: order.id,...order.data(),}
         ));
+    orderListFormat.sort((a, b) => {
+      const dateA = typeof a.fecha?.toDate === "function" ? a.fecha.toDate().getTime() : 0;
+      const dateB = typeof b.fecha?.toDate === "function" ? b.fecha.toDate().getTime() : 0;
+      return dateB - dateA;
+    });
     setOrders(orderListFormat);
     setIsLoading(false);
   }
   useEffect(() => {
     getOrders()
-  },[])
+  },[user])
   
   return (
     <div style={{ marginTop: "8rem", marginBottom: "5rem" }}>

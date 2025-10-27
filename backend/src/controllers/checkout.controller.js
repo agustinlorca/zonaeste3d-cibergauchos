@@ -54,9 +54,11 @@ export const createCheckout = async (req, res, next) => {
       cantidadProductos,
       total,
       estado: "pendiente",
+      fulfillmentStatus: "pendiente",
       preferenceId: null,
       initPoint: null,
       sandboxInitPoint: null,
+      shipping: payload.shipping,
     });
 
     orderId = order.id;
@@ -69,6 +71,7 @@ export const createCheckout = async (req, res, next) => {
       notification_url: `${config.urls.backend}/api/mercadopago/webhook`,
       metadata: {
         orderId,
+        shippingMethod: payload.shipping?.method ?? null,
       },
       statement_descriptor: "ZonaEste3D",
       payment_methods: {

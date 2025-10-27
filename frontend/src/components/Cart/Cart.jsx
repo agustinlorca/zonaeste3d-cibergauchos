@@ -20,6 +20,127 @@ const Cart = () => {
   } = useContext(CartStateContext);
   const [isProcessing, setIsProcessing] = useState(false);
 
+  const collectCheckoutData = async () => {
+    const defaultEmail = user?.email ?? "";
+    const html = `
+      <div class="swal2-form">
+        <input id="buyer-name" class="swal2-input" placeholder="Nombre y apellido" />
+        <input id="buyer-phone" class="swal2-input" placeholder="Telefono" />
+        <input id="buyer-email" class="swal2-input" placeholder="Email" value="${defaultEmail}" />
+        ${user ? "" : '<input id="buyer-email-confirm" class="swal2-input" placeholder="Confirmar email" />'}
+        <div class="swal2-field" style="text-align:left;">
+          <label class="swal2-label" style="margin-bottom:8px; display:block;">Forma de entrega</label>
+          <div class="swal2-radio" style="display:flex; flex-direction:column; gap:6px;">
+            <label style="display:flex; align-items:center; gap:8px;">
+              <input type="radio" name="shipping-method" value="pickup" checked />
+              Retiro en sucursal
+            </label>
+            <label style="display:flex; align-items:center; gap:8px;">
+              <input type="radio" name="shipping-method" value="delivery" />
+              Envio a domicilio
+            </label>
+          </div>
+        </div>
+        <div id="delivery-fields" style="display:none">
+          <input id="shipping-street" class="swal2-input" placeholder="Calle" />
+          <input id="shipping-number" class="swal2-input" placeholder="Numero" />
+          <input id="shipping-city" class="swal2-input" placeholder="Ciudad" />
+          <input id="shipping-province" class="swal2-input" placeholder="Provincia" />
+          <input id="shipping-postal" class="swal2-input" placeholder="Codigo postal" />
+          <textarea id="shipping-notes" class="swal2-textarea" placeholder="Notas adicionales (opcional)"></textarea>
+        </div>
+      </div>
+    `;
+
+    const result = await Swal.fire({
+      title: "Datos de contacto y entrega",
+      html,
+      showCancelButton: true,
+      confirmButtonText: "Generar orden",
+      cancelButtonText: "Cancelar",
+      focusConfirm: false,
+      didOpen: () => {
+        const popup = Swal.getPopup();
+        const methodInputs = popup.querySelectorAll('input[name="shipping-method"]');
+        const deliveryFields = popup.querySelector("#delivery-fields");
+        const toggleDeliveryFields = () => {
+          const selected = popup.querySelector('input[name="shipping-method"]:checked');
+          if (selected?.value === "delivery") {
+            deliveryFields.style.display = "block";
+          } else {
+            deliveryFields.style.display = "none";
+          }
+        };
+        methodInputs.forEach((input) => input.addEventListener("change", toggleDeliveryFields));
+        toggleDeliveryFields();
+      },
+      preConfirm: () => {
+        const popup = Swal.getPopup();
+        const nombre = popup.querySelector("#buyer-name").value.trim();
+        const telefono = popup.querySelector("#buyer-phone").value.trim();
+        const email = popup.querySelector("#buyer-email").value.trim();
+        const confirmEmailInput = popup.querySelector("#buyer-email-confirm");
+        const confirmEmail = confirmEmailInput ? confirmEmailInput.value.trim() : email;
+        const method =
+          popup.querySelector('input[name="shipping-method"]:checked')?.value ?? "";
+
+        if (!nombre || !telefono || !email) {
+          Swal.showValidationMessage("Completa nombre, telefono y email.");
+          return false;
+        }
+
+        if (email !== confirmEmail) {
+          Swal.showValidationMessage("Los correos electronicos no coinciden.");
+          return false;
+        }
+
+        if (!method) {
+          Swal.showValidationMessage("Selecciona una forma de entrega.");
+          return false;
+        }
+
+        let shipping = { method };
+
+        if (method === "delivery") {
+          const street = popup.querySelector("#shipping-street").value.trim();
+          const number = popup.querySelector("#shipping-number").value.trim();
+          const city = popup.querySelector("#shipping-city").value.trim();
+          const province = popup.querySelector("#shipping-province").value.trim();
+          const postalCode = popup.querySelector("#shipping-postal").value.trim();
+          const notes = popup.querySelector("#shipping-notes").value.trim();
+
+          if (!street || !number || !city || !province || !postalCode) {
+            Swal.showValidationMessage("Completa todos los datos del domicilio.");
+            return false;
+          }
+
+          shipping = {
+            method: "delivery",
+            address: {
+              street,
+              number,
+              city,
+              province,
+              postalCode,
+              ...(notes ? { notes } : {}),
+            },
+          };
+        }
+
+        return {
+          buyer: { nombre, telefono, email },
+          shipping,
+        };
+      },
+    });
+
+    if (!result.isConfirmed) {
+      return null;
+    }
+
+    return result.value;
+  };
+
   const sendOrder = async () => {
     if (cartList.length === 0) {
       await Swal.fire({
@@ -30,59 +151,10 @@ const Cart = () => {
       return;
     }
 
-    let formValues;
+    const checkoutData = await collectCheckoutData();
 
-    if (user) {
-      const { isConfirmed } = await Swal.fire({
-        title: `Comprar como ${user.email}?`,
-        icon: "question",
-        showCancelButton: true,
-        confirmButtonText: "Si",
-        cancelButtonText: "Cancelar",
-      });
-
-      if (!isConfirmed) {
-        return;
-      }
-
-      formValues = { nombre: "", telefono: "", email: user.email };
-    } else {
-      const { value } = await Swal.fire({
-        title: "Completa tus datos",
-        html:
-        '<input id="nombre" class="swal2-input" placeholder="Nombre y apellido">' +
-          '<input id="telefono" class="swal2-input" placeholder="Telefono">' +
-          '<input id="email" class="swal2-input" placeholder="Email">' +
-          '<input id="email-2" class="swal2-input" placeholder="Confirmar email">',
-        confirmButtonText: "Generar orden",
-        focusConfirm: false,
-        preConfirm: () => {
-          const nombre = document.getElementById("nombre").value;
-          const telefono = document.getElementById("telefono").value;
-          const email = document.getElementById("email").value;
-          const email2 = document.getElementById("email-2").value;
-
-          if (!nombre || !telefono || !email || !email2) {
-            Swal.showValidationMessage("Por favor completa todos los campos");
-          }
-
-          if (email !== email2) {
-            Swal.showValidationMessage("Los correos electronicos no coinciden");
-          }
-
-          return {
-            nombre,
-            telefono,
-            email,
-          };
-        },
-      });
-
-      formValues = value;
-
-      if (!formValues) {
-        return;
-      }
+    if (!checkoutData) {
+      return;
     }
 
     if (!API_BASE_URL) {
@@ -98,11 +170,19 @@ const Cart = () => {
       setIsProcessing(true);
 
       const buyerPayload =
-        formValues.nombre || formValues.telefono || formValues.email
+        checkoutData.buyer.nombre ||
+        checkoutData.buyer.telefono ||
+        checkoutData.buyer.email
           ? {
-              ...(formValues.nombre ? { nombre: formValues.nombre } : {}),
-              ...(formValues.telefono ? { telefono: formValues.telefono } : {}),
-              ...(formValues.email ? { email: formValues.email } : {}),
+              ...(checkoutData.buyer.nombre
+                ? { nombre: checkoutData.buyer.nombre }
+                : {}),
+              ...(checkoutData.buyer.telefono
+                ? { telefono: checkoutData.buyer.telefono }
+                : {}),
+              ...(checkoutData.buyer.email
+                ? { email: checkoutData.buyer.email }
+                : {}),
             }
           : undefined;
 
@@ -113,6 +193,7 @@ const Cart = () => {
         },
         body: JSON.stringify({
           buyer: buyerPayload,
+          shipping: checkoutData.shipping,
           items: cartList.map((item) => ({
             id: item.id,
             nombre: item.nombre,

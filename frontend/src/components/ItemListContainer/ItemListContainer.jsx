@@ -24,17 +24,22 @@ const ItemListContainer = () => {
     const collectionName = "products";
     //Referencia a la coleccion 'products'
     const productsRef = collection(db, collectionName); 
+    const hasAvailableStock = (product) => Number(product.stock ?? 0) > 0;
 
     //Nos traemos los productos de las categorías por las que naveguemos
     const categoryQuery = idCategory ? query(productsRef, where("categoria", "==", idCategory)) : productsRef;
 
     //Obtenemos los docs de todos los productos y formateamos para trabajarlo más comodo
     const allDocs = await getDocs(productsRef);
-    const allproductListFormat = allDocs.docs.map((product) => ({id: product.id,...product.data(),}));
+    const allproductListFormat = allDocs.docs
+      .map((product) => ({id: product.id,...product.data(),}))
+      .filter(hasAvailableStock);
 
     //Obtenemos los docs de los productos dependiendo de la categoría y formateamos para trabajarlo más comodo
     const categoryDocs = await getDocs(categoryQuery); 
-    const productListFormat = categoryDocs.docs.map((product) => ({id: product.id,...product.data(),}));
+    const productListFormat = categoryDocs.docs
+      .map((product) => ({id: product.id,...product.data(),}))
+      .filter(hasAvailableStock);
 
     setAllProducts(allproductListFormat); //Acá siempre vamos a tener todos los productos
     setListItems(productListFormat); //Acá vamos a tener el listado de productos dependiendo de las busquedas o categorías

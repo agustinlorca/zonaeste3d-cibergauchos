@@ -1,6 +1,5 @@
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-
 
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../../firebase/credentials";
@@ -11,6 +10,8 @@ import OrderDetail from "../OrderDetail/OrderDetail";
 import { Alert, Container } from "react-bootstrap";
 import { AuthCtxt } from "../../context/AuthContext";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "/api";
+
 const OrderDetailContainer = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -18,25 +19,28 @@ const OrderDetailContainer = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [order, setOrder] = useState({});
   const [paymentStatus, setPaymentStatus] = useState(null);
+  const [isConfirming, setIsConfirming] = useState(false);
   const { orderID } = useParams();
 
-  const getOrder = async() => {
+  const getOrder = useCallback(async () => {
+    setIsLoading(true);
     const collectionName = "orders";
-    const orderRef = doc(db,collectionName,orderID)
+    const orderRef = doc(db, collectionName, orderID);
     const response = await getDoc(orderRef);
-    
-    if(response.exists()) {
-      const orderFormat = {id: response.id, ...response.data()}
-      setOrder(orderFormat)
-      setIsLoading(false)
-    }else{
-      navigate('/not-found')
+
+    if (response.exists()) {
+      const orderFormat = { id: response.id, ...response.data() };
+      setOrder(orderFormat);
+      setIsLoading(false);
+    } else {
+      setIsLoading(false);
+      navigate("/not-found", { replace: true });
     }
-  }
+  }, [navigate, orderID]);
 
   useEffect(() => {
-    getOrder()
-  }, [orderID]);
+    getOrder();
+  }, [getOrder]);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -67,6 +71,67 @@ const OrderDetailContainer = () => {
     }
   }, [navigate, order?.buyer?.email, user]);
 
+  useEffect(() => {
+    if (isLoading) {
+      return;
+    }
+
+    if (paymentStatus !== "approved") {
+      return;
+    }
+
+    if (!order?.id || order.paymentConfirmed) {
+      return;
+    }
+
+    if (!API_BASE_URL || isConfirming) {
+      return;
+    }
+
+    let isCancelled = false;
+
+    const confirmOrder = async () => {
+      try {
+        setIsConfirming(true);
+        const response = await fetch(`${API_BASE_URL}/orders/${orderID}/confirm`, {
+          method: "POST",
+        });
+
+        if (!response.ok) {
+          // eslint-disable-next-line no-console
+          console.error("No se pudo confirmar la orden:", response.status);
+          return;
+        }
+
+        if (!isCancelled) {
+          await getOrder();
+        }
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error("Error confirmando la orden:", error);
+      } finally {
+        if (!isCancelled) {
+          setIsConfirming(false);
+        }
+      }
+    };
+
+    confirmOrder();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [
+    API_BASE_URL,
+    getOrder,
+    isConfirming,
+    isLoading,
+    order?.id,
+    order.paymentConfirmed,
+    orderID,
+    paymentStatus,
+  ]);
+
   const renderStatusAlert = () => {
     if (!paymentStatus) {
       return null;
@@ -77,7 +142,7 @@ const OrderDetailContainer = () => {
         variant: "success",
         title: "Pago aprobado",
         body:
-          "Recibimos la confirmacion de Mercado Pago. En breve vas a recibir un correo con los detalles de tu pedido.",
+          "Confirmamos tu pago. En breve vas a recibir un correo con los detalles de tu pedido.",
       },
       pending: {
         variant: "warning",
@@ -109,11 +174,11 @@ const OrderDetailContainer = () => {
   };
 
   return (
-    <Container style={{marginTop:"8rem",marginBottom:"3rem"}}>
+    <Container style={{ marginTop: "8rem", marginBottom: "3rem" }}>
       {renderStatusAlert()}
       {isLoading ? <SpinnerLoader /> : <OrderDetail order={order} />}
     </Container>
-  )
-}
+  );
+};
 
-export default OrderDetailContainer
+export default OrderDetailContainer;

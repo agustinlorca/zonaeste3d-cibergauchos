@@ -9,9 +9,11 @@ export const createOrder = async ({
   cantidadProductos,
   total,
   estado,
+  fulfillmentStatus,
   preferenceId,
   initPoint,
   sandboxInitPoint,
+  shipping,
 }) => {
   const orderRef = orderId
     ? firestore.collection(ORDERS_COLLECTION).doc(orderId)
@@ -22,11 +24,14 @@ export const createOrder = async ({
     cantidadProductos,
     total,
     estado,
+    fulfillmentStatus: fulfillmentStatus ?? "pendiente",
     preferenceId,
     initPoint,
     sandboxInitPoint,
+    shipping: shipping ?? null,
     fecha: FieldValue.serverTimestamp(),
     updatedAt: FieldValue.serverTimestamp(),
+    paymentConfirmed: false,
   };
 
   await orderRef.set(orderPayload);
@@ -63,4 +68,16 @@ export const updateOrderById = async (orderId, updates) => {
     },
     { merge: true }
   );
+};
+
+export const listOrders = async () => {
+  const snapshot = await firestore
+    .collection(ORDERS_COLLECTION)
+    .orderBy("fecha", "desc")
+    .get();
+
+  return snapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
 };

@@ -1,18 +1,15 @@
 import Order from "../Order/Order";
 
-import {Container} from "react-bootstrap";
+import { Container } from "react-bootstrap";
 
-
-const UserOrderList = ({orders}) => {
+const UserOrderList = ({ orders }) => {
   return (
     <Container>
       {orders.map((order) => (
-        <Order key={order.id} id={order.id} total={order.total}/>
-      ))
-      }
-      
+        <Order key={order.id} order={order} />
+      ))}
     </Container>
-  )
-}
+  );
+};
 
-export default UserOrderList
+export default UserOrderList;
