@@ -165,26 +165,6 @@
   box-shadow: 0 12px 24px -12px rgba(15, 26, 90, 0.55);
 }
 
-.auth-spinner {
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  border: 2px solid transparent;
-  border-top-color: currentColor;
-  animation: auth-spin 0.75s linear infinite;
-  margin-right: 8px;
-}
-
-.auth-spinner--light {
-  color: #ffffff;
-}
-
-@keyframes auth-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 .auth-footer {
   text-align: center;
   font-size: 0.9rem;

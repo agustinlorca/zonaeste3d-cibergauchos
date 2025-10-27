@@ -32,6 +32,8 @@ const initialFormState = {
   tipo: "",
 };
 
+const CATEGORY_OPTIONS = ["makers", "filamentos", "impresoras"];
+
 const AdminDashboard = () => {
   const [products, setProducts] = useState([]);
   const [form, setForm] = useState(initialFormState);
@@ -41,6 +43,14 @@ const AdminDashboard = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [activeSection, setActiveSection] = useState("products");
+
+  const formCategoryOptions = useMemo(() => {
+    const options = new Set(CATEGORY_OPTIONS);
+    if (form.categoria) {
+      options.add(form.categoria);
+    }
+    return Array.from(options);
+  }, [form.categoria]);
 
   useEffect(() => {
     const productsRef = collection(db, PRODUCTS_COLLECTION);
@@ -289,20 +299,21 @@ const AdminDashboard = () => {
                 <Col md={4}>
                   <Form.Group>
                     <Form.Label>Categoria *</Form.Label>
-                    <Form.Control
-                      type="text"
+                    <Form.Select
                       name="categoria"
                       value={form.categoria}
                       onChange={handleChange}
-                      placeholder="Ej: makers, filamentos"
-                      list="categories"
                       required
-                    />
-                    <datalist id="categories">
-                      {categories.map((category) => (
-                        <option value={category} key={category} />
+                    >
+                      <option value="" disabled hidden>
+                        Selecciona una categoria
+                      </option>
+                      {formCategoryOptions.map((category) => (
+                        <option value={category} key={category}>
+                          {category.charAt(0).toUpperCase() + category.slice(1)}
+                        </option>
                       ))}
-                    </datalist>
+                    </Form.Select>
                   </Form.Group>
                 </Col>
                 <Col md={4}>

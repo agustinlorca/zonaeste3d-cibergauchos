@@ -161,7 +161,7 @@ const Login = () => {
               <button type="submit" className="auth-primary-button auth-primary-login-btn" disabled={isSubmitting}>
                 {isSubmitting ? (
                   <>
-                    <span className="auth-spinner auth-spinner--light" />Ingresando...
+                    Ingresando...
                   </>
                 ) : (
                   "Ingresar"

@@ -247,7 +247,7 @@ const Register = () => {
               <button type="submit" className="auth-primary-button" disabled={isSubmitting}>
                 {isSubmitting ? (
                   <>
-                    <span className="auth-spinner auth-spinner--light" />Creando cuenta...
+                    Creando cuenta...
                   </>
                 ) : (
                   "Registrarme"
