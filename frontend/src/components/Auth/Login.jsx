@@ -34,7 +34,7 @@ const Login = () => {
 
     try {
       setIsSubmitting(true);
-      await login(email, password);
+      const authUser = await login(email, password);
       toast.success("Inicio de sesion exitoso", {
         position: "top-center",
         autoClose: 1500,
@@ -42,7 +42,8 @@ const Login = () => {
         closeOnClick: false,
         pauseOnHover: true,
       });
-      navigate("/");
+      const destination = authUser?.role === "admin" ? "/admin" : "/";
+      navigate(destination, { replace: true });
     } catch (err) {
       if (err.code === "auth/too-many-requests") {
         setError(
@@ -89,9 +90,12 @@ const Login = () => {
   };
 
   useEffect(() => {
-    if (isAuthReady && user) {
-      navigate("/", { replace: true });
+    if (!isAuthReady || !user) {
+      return;
     }
+
+    const destination = user.role === "admin" ? "/admin" : "/";
+    navigate(destination, { replace: true });
   }, [isAuthReady, navigate, user]);
 
   if (!isAuthReady || user) {

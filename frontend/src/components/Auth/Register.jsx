@@ -78,7 +78,7 @@ const Register = () => {
 
     try {
       setIsSubmitting(true);
-      await register(email, password, {
+      const registeredUser = await register(email, password, {
         firstName: firstName.trim(),
         lastName: lastName.trim(),
         phone: phone.trim(),
@@ -92,7 +92,8 @@ const Register = () => {
         showConfirmButton: false,
       });
 
-      navigate("/");
+      const destination = registeredUser?.role === "admin" ? "/admin" : "/";
+      navigate(destination, { replace: true });
     } catch (err) {
       if (err.code === "auth/invalid-email") {
         setError("El correo ingresado no es valido.");
@@ -115,9 +116,12 @@ const Register = () => {
   };
 
   useEffect(() => {
-    if (isAuthReady && user) {
-      navigate("/", { replace: true });
+    if (!isAuthReady || !user) {
+      return;
     }
+
+    const destination = user?.role === "admin" ? "/admin" : "/";
+    navigate(destination, { replace: true });
   }, [isAuthReady, navigate, user]);
 
   if (!isAuthReady || user) {
