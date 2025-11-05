@@ -13,65 +13,65 @@ import SearchBar from './../SearchBar/SearchBar';
 import Container from "react-bootstrap/Container";
 
 const ItemListContainer = () => {
-  const [allProducts, setAllProducts] = useState([]);
+  const [baseProducts, setBaseProducts] = useState([]);
   const { listItems, setListItems } = useContext(CartStateContext);
   const [searchTerm, setSearchTerm] = useState('');
   const [hasResults, setHasResults] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const { idCategory } = useParams();
 
-  const getProducts = async() => {
+  const getProducts = async () => {
     const collectionName = "products";
     //Referencia a la coleccion 'products'
-    const productsRef = collection(db, collectionName); 
+    const productsRef = collection(db, collectionName);
     const hasAvailableStock = (product) => Number(product.stock ?? 0) > 0;
 
     //Nos traemos los productos de las categorías por las que naveguemos
-    const categoryQuery = idCategory ? query(productsRef, where("categoria", "==", idCategory)) : productsRef;
-
-    //Obtenemos los docs de todos los productos y formateamos para trabajarlo más comodo
-    const allDocs = await getDocs(productsRef);
-    const allproductListFormat = allDocs.docs
-      .map((product) => ({id: product.id,...product.data(),}))
-      .filter(hasAvailableStock);
+    const categoryQuery = idCategory
+      ? query(productsRef, where("categoria", "==", idCategory))
+      : productsRef;
 
     //Obtenemos los docs de los productos dependiendo de la categoría y formateamos para trabajarlo más comodo
-    const categoryDocs = await getDocs(categoryQuery); 
+    const categoryDocs = await getDocs(categoryQuery);
     const productListFormat = categoryDocs.docs
-      .map((product) => ({id: product.id,...product.data(),}))
+      .map((product) => ({ id: product.id, ...product.data() }))
       .filter(hasAvailableStock);
 
-    setAllProducts(allproductListFormat); //Acá siempre vamos a tener todos los productos
+    setBaseProducts(productListFormat);
     setListItems(productListFormat); //Acá vamos a tener el listado de productos dependiendo de las busquedas o categorías
-    setIsLoading(false);
-
+    setSearchTerm("");
     setHasResults(productListFormat.length > 0);
-  }
+    setIsLoading(false);
+  };
   
   const handleSearch = (e) => {
     const term = e.target.value;
-    if (term.length === 0) {
-      setListItems(allProducts);
-      setHasResults(allProducts.length > 0);
-    }
     setSearchTerm(term);
-  }
+
+    if (term.trim().length === 0) {
+      setListItems(baseProducts);
+      setHasResults(baseProducts.length > 0);
+    }
+  };
+
   const handleSubmit = () => {
-    if (searchTerm) {
-      const filteredProducts = allProducts.filter((product) =>
-        product.nombre.toLowerCase().includes(searchTerm.toLowerCase())
+    const normalizedTerm = searchTerm.trim().toLowerCase();
+
+    if (normalizedTerm) {
+      const filteredProducts = baseProducts.filter((product) =>
+        product.nombre.toLowerCase().includes(normalizedTerm)
       );
       setListItems(filteredProducts);
       setHasResults(filteredProducts.length > 0);
     } else {
-      setListItems(allProducts);
-      setHasResults(allProducts.length > 0);
+      setListItems(baseProducts);
+      setHasResults(baseProducts.length > 0);
     }
-  }
+  };
   useEffect(() => {
-    getProducts()
     setIsLoading(true);
-  },[idCategory])
+    getProducts();
+  }, [idCategory]);
 
   
   return (
@@ -86,6 +86,7 @@ const ItemListContainer = () => {
         title="Buscar productos"
         handleSearch={handleSearch} 
         handleSubmit={handleSubmit}
+        value={searchTerm}
         msg="Buscar productos, marcas y más..." 
       />
     
