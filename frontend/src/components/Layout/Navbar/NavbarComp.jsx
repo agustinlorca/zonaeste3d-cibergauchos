@@ -1,5 +1,5 @@
-import { useContext, useMemo } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useContext, useEffect, useMemo } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
@@ -15,6 +15,7 @@ import { AuthCtxt } from "../../../context/AuthContext";
 
 const NavbarComp = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const {user,logout,isAuthReady,isAdmin} = useContext(AuthCtxt);
 
   const userDisplayName = useMemo(() => {
@@ -39,6 +40,12 @@ const NavbarComp = () => {
 
     return "Mi cuenta";
   }, [user]);
+
+  useEffect(() => {
+    if (isAuthReady && isAdmin && location.pathname === "/") {
+      navigate("/admin", { replace: true });
+    }
+  }, [isAuthReady, isAdmin, location.pathname, navigate]);
   
   const handleLogout = async () =>{
     await logout();
