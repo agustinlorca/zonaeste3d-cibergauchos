@@ -20,6 +20,7 @@ const OrderDetailContainer = () => {
   const [order, setOrder] = useState({});
   const [paymentStatus, setPaymentStatus] = useState(null);
   const [isConfirming, setIsConfirming] = useState(false);
+  const [isCancelling, setIsCancelling] = useState(false);
   const { orderID } = useParams();
 
   useEffect(() => {
@@ -151,6 +152,74 @@ const OrderDetailContainer = () => {
       setIsConfirming(false);
     }
   }, [isConfirming, order.paymentConfirmed]);
+
+  useEffect(() => {
+    if (isLoading) {
+      return;
+    }
+
+    if (paymentStatus !== "failure") {
+      return;
+    }
+
+    if (!order?.id) {
+      return;
+    }
+
+    if (!API_BASE_URL || isCancelling) {
+      return;
+    }
+
+    if (order.paymentConfirmed) {
+      return;
+    }
+
+    const currentEstado = (order.estado ?? "").toLowerCase();
+    const currentFulfillment = (order.fulfillmentStatus ?? "").toLowerCase();
+
+    if (currentEstado === "rechazado" && currentFulfillment === "cancelado") {
+      return;
+    }
+
+    let aborted = false;
+
+    const cancelOrder = async () => {
+      try {
+        setIsCancelling(true);
+        const response = await fetch(`${API_BASE_URL}/orders/${orderID}/cancel`, {
+          method: "POST",
+        });
+
+        if (!response.ok) {
+          // eslint-disable-next-line no-console
+          console.error("No se pudo cancelar la orden:", response.status);
+        }
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error("Error cancelando la orden:", error);
+      } finally {
+        if (!aborted) {
+          setIsCancelling(false);
+        }
+      }
+    };
+
+    cancelOrder();
+
+    return () => {
+      aborted = true;
+    };
+  }, [
+    API_BASE_URL,
+    isCancelling,
+    isLoading,
+    order?.estado,
+    order?.fulfillmentStatus,
+    order?.id,
+    order.paymentConfirmed,
+    orderID,
+    paymentStatus,
+  ]);
 
   const renderStatusAlert = () => {
     if (!paymentStatus) {

@@ -242,3 +242,40 @@ export const updateOrder = async (req, res, next) => {
     return next(error);
   }
 };
+
+export const cancelOrder = async (req, res, next) => {
+  try {
+    const { orderId } = req.params;
+
+    const order = await getOrderById(orderId);
+
+    if (!order) {
+      return res.status(404).json({ message: "Orden no encontrada" });
+    }
+
+    if (order.paymentConfirmed) {
+      return res.status(400).json({
+        message: "No se puede cancelar una orden con pago confirmado",
+      });
+    }
+
+    const currentStatus = (order.fulfillmentStatus ?? "").toLowerCase();
+    const currentPayment = (order.estado ?? "").toLowerCase();
+    const alreadyCancelled =
+      currentStatus === "cancelado" && currentPayment === "rechazado";
+
+    if (!alreadyCancelled) {
+      await updateOrderById(orderId, {
+        estado: "rechazado",
+        paymentStatus: "rejected",
+        paymentStatusDetail: "user_cancelled",
+        fulfillmentStatus: "cancelado",
+      });
+    }
+
+    const updatedOrder = await getOrderById(orderId);
+    return res.json(mapOrderForResponse(updatedOrder));
+  } catch (error) {
+    return next(error);
+  }
+};
